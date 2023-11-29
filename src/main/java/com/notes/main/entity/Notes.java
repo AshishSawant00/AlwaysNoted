@@ -46,7 +46,7 @@ public class Notes extends AbstractDetails {
 	@Column(nullable = false)
 	private String title;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 10000)
 	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
