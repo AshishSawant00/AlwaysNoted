@@ -1,8 +1,10 @@
 package com.notes.main.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +20,7 @@ import com.notes.main.dto.request.NotesRequestDTO;
 import com.notes.main.dto.response.NotesResponseDTO;
 import com.notes.main.entity.Notes;
 import com.notes.main.service.NotesService;
+import com.notes.main.serviceImpl.PdfService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +33,9 @@ public class NotesController {
 	@Autowired
 	NotesService notesService;
 
+	@Autowired
+	private PdfService pdfService;
+
 	@GetMapping("/{id}")
 	List<NotesResponseDTO> findById(@PathVariable int id) {
 		List<NotesResponseDTO> notes = notesService.notes(id);
@@ -40,27 +46,65 @@ public class NotesController {
 	ResponseEntity<String> save(@RequestBody NotesRequestDTO dto) {
 		if (!dto.getUuid().isBlank()) {
 			notesService.saveNotes(dto);
-			return ResponseEntity.ok("Note saved with uuid - "+dto.getUuid());
+			return ResponseEntity.ok("Note saved with uuid - " + dto.getUuid());
 		}
 
 		return null;
 	}
-	
+
 	@PutMapping("/note/{id}")
-	void updateNote(@PathVariable int id, @RequestBody NotesRequestDTO dto){
-		if(!dto.getContent().isBlank()) {
+	void updateNote(@PathVariable int id, @RequestBody NotesRequestDTO dto) {
+		if (!dto.getContent().isBlank()) {
 			Notes note = notesService.findById(id);
 			note.setContent(dto.getContent());
 			note.setTitle(dto.getTitle());
 			notesService.saveNoteEntity(note);
 		}
 	}
-	
+
 	@DeleteMapping("/note/{id}")
 	String deleteNote(@PathVariable(name = "id") int id) {
 		String deleteNote = notesService.deleteNote(id);
 		return deleteNote;
 	}
-	
+
+	@PostMapping(value = "/api/notes/pdf", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> saveNotesAsPdf(@RequestBody List<Notes> notes) {
+
+		try {
+
+			String noteContent = buildNoteContent(notes); // Implement a method to convert Note objects to a string
+
+			byte[] pdfBytes = pdfService.generatePdf(noteContent);
+
+			return ResponseEntity.ok().body(pdfBytes);
+
+		} catch (IOException e) {
+
+			// Handle exception appropriately
+
+			return ResponseEntity.status(500).body(null);
+
+		}
+
+	}
+
+	private String buildNoteContent(List<Notes> notes) {
+
+		// Implement logic to convert Note objects to a single string
+
+		// Example: Concatenate titles and contents
+
+		StringBuilder contentBuilder = new StringBuilder();
+
+		for (Notes note : notes) {
+
+			contentBuilder.append(note.getTitle()).append(": ").append(note.getContent()).append("\n");
+
+		}
+
+		return contentBuilder.toString();
+
+	}
 
 }
