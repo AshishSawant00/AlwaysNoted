@@ -14,6 +14,8 @@ public interface notesRepository extends JpaRepository<Notes, Integer>{
 	
 	    List<Notes> findNotesByUserId(int userId);
 	    
+	    List<Notes> findAllByToFeedIsTrue();
+	    
 	 
 
 }

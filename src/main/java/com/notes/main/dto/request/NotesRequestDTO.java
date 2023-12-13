@@ -20,5 +20,6 @@ public class NotesRequestDTO {
 	private String title;
 	private String content;
 	private String uuid;
+	private boolean toFeed;
 
 }

@@ -41,6 +41,12 @@ public class NotesController {
 		List<NotesResponseDTO> notes = notesService.notes(id);
 		return notes;
 	}
+	
+	@GetMapping("feed")
+	List<NotesResponseDTO> feed(){
+		List<NotesResponseDTO> notes = notesService.feed();
+		return notes;
+	}
 
 	@PostMapping("/save-note")
 	ResponseEntity<String> save(@RequestBody NotesRequestDTO dto) {
@@ -50,6 +56,15 @@ public class NotesController {
 		}
 
 		return null;
+	}
+	
+	@PutMapping("/feed/{id}")
+	void toFeed(@PathVariable int id, @RequestBody NotesRequestDTO dto) {
+		Notes note = notesService.findById(id);
+		note.setContent(dto.getContent());
+		note.setTitle(dto.getTitle());
+		note.setToFeed(true);
+		notesService.saveNoteEntity(note);
 	}
 
 	@PutMapping("/note/{id}")
@@ -69,27 +84,18 @@ public class NotesController {
 	}
 
 	@PostMapping(value = "/api/notes/pdf", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
-	public ResponseEntity<byte[]> saveNotesAsPdf(@RequestBody List<Notes> notes) {
-
+	public ResponseEntity<byte[]> saveNotesAsPdf(@RequestBody Notes notes) {
 		try {
-
 			String noteContent = buildNoteContent(notes); // Implement a method to convert Note objects to a string
-
 			byte[] pdfBytes = pdfService.generatePdf(noteContent);
-
 			return ResponseEntity.ok().body(pdfBytes);
-
 		} catch (IOException e) {
-
 			// Handle exception appropriately
-
 			return ResponseEntity.status(500).body(null);
-
 		}
-
 	}
 
-	private String buildNoteContent(List<Notes> notes) {
+	private String buildNoteContent(Notes notes) {
 
 		// Implement logic to convert Note objects to a single string
 
@@ -97,14 +103,15 @@ public class NotesController {
 
 		StringBuilder contentBuilder = new StringBuilder();
 
-		for (Notes note : notes) {
+		{
 
-			contentBuilder.append(note.getTitle()).append(": ").append(note.getContent()).append("\n");
+			contentBuilder.append(notes.getTitle()).append(": ").append(notes.getContent()).append("\n");
 
 		}
 
 		return contentBuilder.toString();
 
 	}
+	
 
 }

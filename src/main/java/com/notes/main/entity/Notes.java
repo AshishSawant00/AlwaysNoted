@@ -54,4 +54,7 @@ public class Notes extends AbstractDetails {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private User user;
 	
+	private boolean toFeed;
+	
+	
 }

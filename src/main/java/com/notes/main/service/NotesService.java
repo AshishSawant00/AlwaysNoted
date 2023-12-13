@@ -21,4 +21,6 @@ public interface NotesService {
 	
 	public String deleteNote(int id);
 	
+	List<NotesResponseDTO> feed();
+	
 }

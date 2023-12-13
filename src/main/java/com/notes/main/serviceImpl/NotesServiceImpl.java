@@ -83,4 +83,18 @@ public class NotesServiceImpl implements NotesService {
 		return "Note not found or deletion failed.";
 	}
 
+	@Override
+	public List<NotesResponseDTO> feed() {
+		notesResponseDTO.clear();
+
+		List<Notes> allNotes = notesRepository.findAllByToFeedIsTrue();
+		allNotes.forEach(e -> {
+			notesResponseDTO.add(new NotesResponseDTO(e.getId(), e.getTitle(), e.getContent()));
+		});
+
+		log.info("NotesResponseDTO - {}", notesResponseDTO);
+
+		return notesResponseDTO;
+	}
+
 }
