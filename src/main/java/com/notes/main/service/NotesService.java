@@ -25,6 +25,6 @@ public interface NotesService {
 
 	List<NotesResponseDTO> feed();
 
-	public Page<NotesResponseDTO> getNotes(PaginationRequest paginationRequest);
+	public Page<NotesResponseDTO> getNotes(PaginationRequest paginationRequest, int loggedInUserId);
 
 }

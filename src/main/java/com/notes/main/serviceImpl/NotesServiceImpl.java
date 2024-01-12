@@ -104,11 +104,14 @@ public class NotesServiceImpl implements NotesService {
 		return notesResponseDTO;
 	}
 
-	public Page<NotesResponseDTO> getNotes(PaginationRequest paginationRequest) {
+	public Page<NotesResponseDTO> getNotes(PaginationRequest paginationRequest, int loggedInUserId) {
 		Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize(),
 				Sort.by(paginationRequest.getSort()).descending()); // Assuming descending order
+		
+		Specification<Notes> specification = Specification.where(
+	            NoteSpecifications.userEquals(loggedInUserId)
+	    );
 
-		Specification<Notes> specification = Specification.where(null); // Initial empty specification
 		if (StringUtils.hasText(paginationRequest.getSearch())) {
 			specification = specification.and(NoteSpecifications.titleOrContentLike(paginationRequest.getSearch()));
 		}

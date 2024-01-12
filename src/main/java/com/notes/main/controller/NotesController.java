@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.notes.main.dto.request.NotesRequestDTO;
@@ -117,8 +118,9 @@ public class NotesController {
 	}
 
 	@PostMapping("/pagination")
-	private ResponseEntity<Page<NotesResponseDTO>> pagination(@RequestBody PaginationRequest paginationRequest) {
-		Page<NotesResponseDTO> notes = notesService.getNotes(paginationRequest);
+	private ResponseEntity<Page<NotesResponseDTO>> pagination(@RequestBody PaginationRequest paginationRequest, @RequestParam int loggedInUserId) {
+		Page<NotesResponseDTO> notes = notesService.getNotes(paginationRequest, loggedInUserId);
+		log.error("Inside Pagination {} ",paginationRequest.getSearch());
 		return ResponseEntity.ok(notes);
 	}
 
