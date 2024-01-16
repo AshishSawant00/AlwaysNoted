@@ -41,9 +41,9 @@ public class NotesController {
 		List<NotesResponseDTO> notes = notesService.notes(id);
 		return notes;
 	}
-	
+
 	@GetMapping("feed")
-	List<NotesResponseDTO> feed(){
+	List<NotesResponseDTO> feed() {
 		List<NotesResponseDTO> notes = notesService.feed();
 		return notes;
 	}
@@ -57,7 +57,7 @@ public class NotesController {
 
 		return null;
 	}
-	
+
 	@PutMapping("/feed/{id}")
 	void toFeed(@PathVariable int id, @RequestBody NotesRequestDTO dto) {
 		Notes note = notesService.findById(id);
@@ -104,14 +104,11 @@ public class NotesController {
 		StringBuilder contentBuilder = new StringBuilder();
 
 		{
-
-			contentBuilder.append(notes.getTitle()).append(": ").append(notes.getContent()).append("\n");
-
+			contentBuilder.append(notes.getTitle()).append("\n").append(": ").append(notes.getContent()).append("\n");
 		}
 
 		return contentBuilder.toString();
 
 	}
-	
 
 }

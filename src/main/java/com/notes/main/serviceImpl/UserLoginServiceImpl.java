@@ -1,10 +1,8 @@
 package com.notes.main.serviceImpl;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.notes.main.dto.request.LogInRequestDTO;

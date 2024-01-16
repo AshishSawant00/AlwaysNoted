@@ -16,6 +16,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+//soft delete
 @SQLDelete(sql = "UPDATE users SET deleted_at = current_timestamp() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
 public class User extends AbstractDetails {
