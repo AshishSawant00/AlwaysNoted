@@ -5,9 +5,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.notes.main.dto.NoteSpecifications;
 import com.notes.main.dto.request.NotesRequestDTO;
+import com.notes.main.dto.request.PaginationRequest;
 import com.notes.main.dto.response.NotesResponseDTO;
 import com.notes.main.entity.Notes;
 import com.notes.main.repository.notesRepository;
@@ -69,17 +77,16 @@ public class NotesServiceImpl implements NotesService {
 	public String deleteNote(int id) {
 		Notes note = notesRepository.findById(id).get();
 		notesRepository.delete(note);
-		 try {
-		     Notes notes1 = notesRepository.findById(id).get();
-		     if (notes1.getDeletedAt() != null) {
-					return "Note successfully deleted.";
-				}
+		try {
+			Notes notes1 = notesRepository.findById(id).get();
+			if (notes1.getDeletedAt() != null) {
+				return "Note successfully deleted.";
+			}
 
-		 }catch (NoSuchElementException e) {
-			 return "Note successfully deleted.";			
+		} catch (NoSuchElementException e) {
+			return "Note successfully deleted.";
 		}
-		 
-		
+
 		return "Note not found or deletion failed.";
 	}
 
@@ -95,6 +102,30 @@ public class NotesServiceImpl implements NotesService {
 		log.info("NotesResponseDTO - {}", notesResponseDTO);
 
 		return notesResponseDTO;
+	}
+
+	public Page<NotesResponseDTO> getNotes(PaginationRequest paginationRequest, int loggedInUserId) {
+		Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize(),
+				Sort.by(paginationRequest.getSort()).ascending()); // Assuming descending order
+		Specification<Notes> specification = null;
+		if(loggedInUserId>0) {
+		 specification = Specification.where(
+	            NoteSpecifications.userEquals(loggedInUserId));
+		} else if (loggedInUserId  ==0 ) {
+			specification = NoteSpecifications.toFeedEquals(true);
+		}
+
+		if (StringUtils.hasText(paginationRequest.getSearch())) {
+			specification = specification.and(NoteSpecifications.titleOrContentLike(paginationRequest.getSearch()));
+		}
+
+		Page<Notes> notesEntities = notesRepository.findAll(specification, pageable);
+		return notesEntities.map(this::mapToResponseDTO);
+	}
+
+	private NotesResponseDTO mapToResponseDTO(Notes noteEntity) {
+		// Map entity to response DTO
+		return new NotesResponseDTO(noteEntity.getId(), noteEntity.getTitle(), noteEntity.getContent());
 	}
 
 }

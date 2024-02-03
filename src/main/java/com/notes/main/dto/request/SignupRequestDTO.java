@@ -1,6 +1,9 @@
 package com.notes.main.dto.request;
 
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.stereotype.Component;
+
+import com.notes.main.service.CustomValidation.UniqueUsername;
 
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -16,6 +19,7 @@ import lombok.ToString;
 public class SignupRequestDTO {
 	
 	private String name;
+	@UniqueUsername
 	private String userName;
 	@Email
 	private String email;

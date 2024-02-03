@@ -15,8 +15,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class PaginationRequest {
-   private int page;
-   private int size;
-   private String search;
-   
+
+	private int size;
+	private int page;
+	private String search;
+	private String sort;
+	private String order;
+
 }
